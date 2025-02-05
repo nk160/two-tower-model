@@ -16,7 +16,7 @@ OUTPUT_DIM = 384      # Final embedding dimension
 MAX_LENGTH = 64       # Maximum sequence length
 BATCH_SIZE = 256      # Batch size
 LEARNING_RATE = 0.00005
-NUM_EPOCHS = 2        # Reduced from 10 to 2
+NUM_EPOCHS = 1        # Reduced from 10 to 2
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Add a subset size limit for initial testing
