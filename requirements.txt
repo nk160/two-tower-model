@@ -1,0 +1,6 @@
+torch
+tqdm
+gensim
+numpy
+torchtext
+datasets 

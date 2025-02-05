@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Model files and data
+marco_data/
+best_model.pt
+/root/gensim-data/
+
+# IDE
+.idea/
+.vscode/ __pycache__/
+*.pt
+marco_data/*.json
+__pycache__/
+*.pt
+marco_data/*.json
