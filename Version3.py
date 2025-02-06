@@ -8,6 +8,7 @@ from tqdm import tqdm
 import gensim.downloader as gensim_downloader
 import numpy as np
 import os
+import sys
 
 # Configuration Parameters
 EMBEDDING_DIM = 300    # Match word2vec dimensions
@@ -338,48 +339,74 @@ def train_model(model, train_loader, val_loader, criterion, optimizer, num_epoch
     return history
 
 if __name__ == "__main__":
-    # Set up logging
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s - %(levelname)s - %(message)s'
-    )
-    
-    # Load datasets
-    logging.info("Loading datasets...")
-    train_dataset = MarcoDataset(split="train", max_length=MAX_LENGTH)
-    val_dataset = MarcoDataset(split="validation", max_length=MAX_LENGTH)
-    
-    # Create dataloaders
-    train_loader = DataLoader(
-        train_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=True
-    )
-    val_loader = DataLoader(
-        val_dataset,
-        batch_size=BATCH_SIZE,
-        shuffle=False
-    )
-    
-    # Initialize model with vocabulary
-    model = TwoTowerModel(
-        vocab_size=len(train_dataset.vocab),
-        vocab=train_dataset.vocab  # Pass vocab to model
-    )
-    
-    # Initialize optimizer
-    optimizer = torch.optim.Adam(
-        [p for p in model.parameters() if p.requires_grad],
-        lr=LEARNING_RATE
-    )
-    
-    # Train model
-    train_model(
-        model=model,
-        train_loader=train_loader,
-        val_loader=val_loader,
-        criterion=TripletLossWithMetrics(margin=0.3),
-        optimizer=optimizer,
-        num_epochs=NUM_EPOCHS,
-        early_stopping=EarlyStopping(patience=2, min_delta=0.001)
-    )
+    if len(sys.argv) > 1 and sys.argv[1] == "verify":
+        # Only run verification
+        def verify_checkpoint():
+            print("Loading best checkpoint (Epoch 1)...")
+            checkpoint_path = 'checkpoints/checkpoint_epoch_1.pt'
+            checkpoint = torch.load(checkpoint_path)
+            
+            print("\nCheckpoint Info:")
+            print(f"Epoch: {checkpoint['epoch']}")
+            print("\nValidation Metrics:")
+            for k, v in checkpoint['metrics']['val'].items():
+                print(f"{k}: {v:.4f}")
+            
+            print("\nLoading model...")
+            model = TwoTowerModel(
+                vocab_size=len(checkpoint['vocab']),
+                vocab=checkpoint['vocab']
+            )
+            model.load_state_dict(checkpoint['model_state_dict'])
+            model.eval()
+            print("Model loaded successfully!")
+            
+            return model
+
+        model = verify_checkpoint()
+    else:
+        # Run training (existing code)
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(levelname)s - %(message)s'
+        )
+        
+        # Load datasets
+        logging.info("Loading datasets...")
+        train_dataset = MarcoDataset(split="train", max_length=MAX_LENGTH)
+        val_dataset = MarcoDataset(split="validation", max_length=MAX_LENGTH)
+        
+        # Create dataloaders
+        train_loader = DataLoader(
+            train_dataset,
+            batch_size=BATCH_SIZE,
+            shuffle=True
+        )
+        val_loader = DataLoader(
+            val_dataset,
+            batch_size=BATCH_SIZE,
+            shuffle=False
+        )
+        
+        # Initialize model with vocabulary
+        model = TwoTowerModel(
+            vocab_size=len(train_dataset.vocab),
+            vocab=train_dataset.vocab  # Pass vocab to model
+        )
+        
+        # Initialize optimizer
+        optimizer = torch.optim.Adam(
+            [p for p in model.parameters() if p.requires_grad],
+            lr=LEARNING_RATE
+        )
+        
+        # Train model
+        train_model(
+            model=model,
+            train_loader=train_loader,
+            val_loader=val_loader,
+            criterion=TripletLossWithMetrics(margin=0.3),
+            optimizer=optimizer,
+            num_epochs=NUM_EPOCHS,
+            early_stopping=EarlyStopping(patience=2, min_delta=0.001)
+        )
