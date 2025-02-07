@@ -33,3 +33,5 @@ marco_data/*.json
 __pycache__/
 *.pt
 marco_data/*.json
+wandb/
+wandb/
