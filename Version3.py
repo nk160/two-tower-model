@@ -1,3 +1,4 @@
+import wandb
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -17,7 +18,7 @@ OUTPUT_DIM = 384      # Final embedding dimension
 MAX_LENGTH = 64       # Maximum sequence length
 BATCH_SIZE = 256      # Batch size
 LEARNING_RATE = 0.00005
-NUM_EPOCHS = 3        # Running 3 epochs
+NUM_EPOCHS = 1        # Running 3 epochs
 DEVICE = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Add a subset size limit for initial testing
