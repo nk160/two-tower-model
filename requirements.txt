@@ -1,7 +1,6 @@
 fastapi
 uvicorn
 torch
-faiss-gpu
-numpy
-gensim
-tqdm
+wandb
+pydantic
+python-multipart
